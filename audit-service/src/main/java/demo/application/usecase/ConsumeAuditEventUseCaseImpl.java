@@ -25,6 +25,11 @@ public class ConsumeAuditEventUseCaseImpl implements ConsumeAuditEventUseCase {
         try {
             AuditEvent auditEvent = new AuditEvent();
             auditEvent.setEventType(asString(event.get("eventType")));
+            auditEvent.setAction(asString(event.get("action")));
+            auditEvent.setActor(asString(event.get("actor")));
+            auditEvent.setResourceType(asString(event.get("resourceType")));
+            auditEvent.setResourceId(asString(event.get("resourceId")));
+            auditEvent.setResourceName(asString(event.get("resourceName")));
             auditEvent.setDocumentId(asString(event.get("documentId")));
             auditEvent.setTitle(asString(event.get("title")));
             auditEvent.setFileUrl(asString(event.get("fileUrl")));

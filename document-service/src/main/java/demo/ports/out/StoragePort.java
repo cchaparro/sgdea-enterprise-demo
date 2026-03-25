@@ -4,4 +4,6 @@ import java.io.InputStream;
 
 public interface StoragePort {
     String save(InputStream file, String filename);
+
+    String generatePresignedUrl(String filename);
 }

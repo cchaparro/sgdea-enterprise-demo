@@ -3,18 +3,7 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Debug Identity Service",
-      "request": "launch",
-      "mainClass": "demo.App",
-      "cwd": "${workspaceFolder}/identity-service",
-      "vmArgs": "-Dspring.profiles.active=local",
-      "env": {
-        "SPRING_PROFILES_ACTIVE": "local"
-      }
-    },
-    {
-      "type": "java",
-      "name": "Debug Document Service",
+      "name": "Debug Document",
       "request": "launch",
       "mainClass": "demo.App",
       "cwd": "${workspaceFolder}/document-service",
@@ -22,71 +11,6 @@
       "env": {
         "SPRING_PROFILES_ACTIVE": "local"
       }
-    },
-    {
-      "type": "java",
-      "name": "Debug Metadata Service",
-      "request": "launch",
-      "mainClass": "demo.App",
-      "cwd": "${workspaceFolder}/metadata-service",
-      "vmArgs": "-Dspring.profiles.active=local",
-      "env": {
-        "SPRING_PROFILES_ACTIVE": "local"
-      }
-    },
-    {
-      "type": "java",
-      "name": "Debug Audit Service",
-      "request": "launch",
-      "mainClass": "demo.App",
-      "cwd": "${workspaceFolder}/audit-service",
-      "vmArgs": "-Dspring.profiles.active=local",
-      "env": {
-        "SPRING_PROFILES_ACTIVE": "local"
-      }
-    },
-    {
-      "type": "java",
-      "name": "Debug Search Service",
-      "request": "launch",
-      "mainClass": "com.template.Application",
-      "cwd": "${workspaceFolder}/search-service",
-      "vmArgs": "-Dspring.profiles.active=local",
-      "env": {
-        "SPRING_PROFILES_ACTIVE": "local"
-      }
-    },
-    {
-      "type": "java",
-      "name": "Debug Gateway",
-      "request": "launch",
-      "mainClass": "demo.App",
-      "cwd": "${workspaceFolder}/gateway",
-      "vmArgs": "-Dspring.profiles.active=local",
-      "env": {
-        "SPRING_PROFILES_ACTIVE": "local"
-      }
-    }
-  ],
-  "compounds": [
-    {
-      "name": "Debug Core Local Stack",
-      "configurations": [
-        "Debug Metadata Service",
-        "Debug Search Service",
-        "Debug Document Service"
-      ]
-    },
-    {
-      "name": "Debug All Local Services",
-      "configurations": [
-        "Debug Identity Service",
-        "Debug Metadata Service",
-        "Debug Audit Service",
-        "Debug Search Service",
-        "Debug Document Service",
-        "Debug Gateway"
-      ]
     }
   ]
 }

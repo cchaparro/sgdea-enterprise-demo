@@ -8,7 +8,9 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.errors.MinioException;
+import io.minio.http.Method;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -56,6 +59,24 @@ public class MinioAdapter implements StoragePort {
         } catch (MinioException | IOException | GeneralSecurityException e) {
             log.error("Error saving file to MinIO: {}", e.getMessage());
             throw new RuntimeException("Failed to save file to storage", e);
+        }
+    }
+
+    @Override
+    public String generatePresignedUrl(String filename) {
+        try {
+            String url = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucketName)
+                            .object(filename)
+                            .expiry(15, TimeUnit.MINUTES)
+                            .build());
+            log.info("Generated presigned URL for {}/{}", bucketName, filename);
+            return url;
+        } catch (MinioException | IOException | GeneralSecurityException e) {
+            log.error("Error generating presigned URL: {}", e.getMessage());
+            throw new RuntimeException("Failed to generate presigned URL", e);
         }
     }
 

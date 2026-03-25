@@ -54,6 +54,7 @@ services:
       - "9092:9092"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
       KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
@@ -61,6 +62,22 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    networks:
+      - sgdea-net
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      kafka:
+        condition: service_started
+    entrypoint:
+      - /bin/sh
+      - -c
+    command: |
+      echo "Waiting for Kafka to be ready..."
+      cub kafka-ready -b kafka:29092 1 60
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic audit-events --partitions 1 --replication-factor 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic metadata-events --partitions 1 --replication-factor 1
     networks:
       - sgdea-net
 
@@ -115,7 +132,7 @@ services:
   metadata-service:
     build: ./metadata-service
     ports:
-      - "8083:8083"
+      - "8184:8083"
     environment:
       <<: *otel-env
       OTEL_SERVICE_NAME: metadata-service
@@ -137,7 +154,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sgdea
       SPRING_DATASOURCE_USERNAME: sgdea
       SPRING_DATASOURCE_PASSWORD: sgdea
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       MINIO_URL: http://minio:9000
       METADATA_SERVICE_URL: http://metadata-service:8083
     networks:
@@ -159,6 +176,7 @@ services:
     environment:
       <<: *otel-env
       OTEL_SERVICE_NAME: audit-service
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     networks:
       - sgdea-net
     depends_on:
@@ -166,6 +184,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
       otel-collector:
         condition: service_started
 
@@ -196,13 +216,15 @@ services:
       <<: *otel-env
       OTEL_SERVICE_NAME: search-service
       SERVER_PORT: 8086
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
     networks:
       - sgdea-net
     depends_on:
       kafka:
         condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
       elasticsearch:
         condition: service_started
       otel-collector:

@@ -2,6 +2,7 @@ package demo.infrastructure.adapters.out.persistence;
 
 import demo.domain.model.Metadata;
 import demo.domain.ports.out.MetadataRepositoryPort;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,5 +21,10 @@ public class MetadataRepositoryAdapter implements MetadataRepositoryPort {
     @Override
     public Optional<Metadata> findById(String documentId) {
         return repository.findById(documentId);
+    }
+
+    @Override
+    public List<Metadata> findByOwner(String owner) {
+        return repository.findByOwner(owner);
     }
 }

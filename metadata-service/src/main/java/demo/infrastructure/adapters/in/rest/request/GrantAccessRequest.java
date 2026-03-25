@@ -1,4 +1,4 @@
 package demo.infrastructure.adapters.in.rest.request;
 
-public record GrantAccessRequest(String user) {
+public record GrantAccessRequest(String user, String grantedBy) {
 }

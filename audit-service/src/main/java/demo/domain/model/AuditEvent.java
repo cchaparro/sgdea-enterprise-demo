@@ -18,6 +18,16 @@ public class AuditEvent {
 
     private String eventType;
 
+    private String action;
+
+    private String actor;
+
+    private String resourceType;
+
+    private String resourceId;
+
+    private String resourceName;
+
     private String documentId;
 
     private String title;
@@ -53,6 +63,46 @@ public class AuditEvent {
 
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getActor() {
+        return actor;
+    }
+
+    public void setActor(String actor) {
+        this.actor = actor;
+    }
+
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 
     public String getTitle() {
