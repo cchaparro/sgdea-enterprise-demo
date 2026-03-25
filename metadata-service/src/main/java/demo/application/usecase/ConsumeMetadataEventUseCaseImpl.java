@@ -28,6 +28,10 @@ public class ConsumeMetadataEventUseCaseImpl implements ConsumeMetadataEventUseC
         metadataEvent.setTitle(asString(event.get("title")));
         metadataEvent.setFileUrl(asString(event.get("fileUrl")));
         metadataEvent.setParentId(asString(event.get("parentId")));
+        metadataEvent.setExpedienteId(asString(event.get("expedienteId")));
+        metadataEvent.setTipoDocumental(asString(event.get("tipoDocumental")));
+        metadataEvent.setEstado(asString(event.get("estado")));
+        metadataEvent.setVersion(asInteger(event.get("version")));
         metadataEvent.setOwner(asString(event.get("owner")));
         metadataEvent.setTraceId(asString(event.get("traceId")));
         metadataEvent.setOccurredAt(parseInstant(event.get("timestamp")));
@@ -46,7 +50,18 @@ public class ConsumeMetadataEventUseCaseImpl implements ConsumeMetadataEventUseC
         Metadata metadata = metadataRepositoryPort.findById(metadataEvent.getDocumentId())
                 .orElseGet(Metadata::new);
         metadata.setDocumentId(metadataEvent.getDocumentId());
+        metadata.setTitle(metadataEvent.getTitle());
+        metadata.setFileUrl(metadataEvent.getFileUrl());
+        metadata.setParentId(metadataEvent.getParentId());
+        metadata.setExpedienteId(metadataEvent.getExpedienteId());
+        metadata.setTipoDocumental(metadataEvent.getTipoDocumental());
+        metadata.setEstado(metadataEvent.getEstado() == null ? "ACTIVO" : metadataEvent.getEstado());
+        metadata.setVersion(metadataEvent.getVersion() == null ? 1 : metadataEvent.getVersion());
         metadata.setOwner(metadataEvent.getOwner());
+        if (metadata.getCreatedAt() == null) {
+            metadata.setCreatedAt(Instant.now());
+        }
+        metadata.setUpdatedAt(Instant.now());
         metadataRepositoryPort.save(metadata);
     }
 
@@ -63,6 +78,23 @@ public class ConsumeMetadataEventUseCaseImpl implements ConsumeMetadataEventUseC
             return Instant.parse(value.toString());
         } catch (DateTimeParseException ex) {
             log.warn("Could not parse metadata event timestamp '{}'", value);
+            return null;
+        }
+    }
+
+    private Integer asInteger(Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+
+        try {
+            return Integer.parseInt(value.toString());
+        } catch (NumberFormatException ex) {
+            log.warn("Could not parse metadata event version '{}'", value);
             return null;
         }
     }

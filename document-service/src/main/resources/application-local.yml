@@ -1,0 +1,39 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sgdea
+    username: sgdea
+    password: sgdea
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+minio:
+  url: http://localhost:9000
+  access-key: minio
+  secret-key: miniopassword
+  bucket-name: documents
+
+services:
+  metadata:
+    base-url: http://localhost:8183
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    level: "%5p [traceId:%X{traceId:-N/A}] [otelTrace:%X{trace_id:-N/A}] [span:%X{span_id:-N/A}]"

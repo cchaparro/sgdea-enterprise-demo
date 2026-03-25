@@ -1,9 +1,9 @@
 server:
-  port: ${SERVER_PORT:8086}
+  port: 8086
 
 spring:
   kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -18,7 +18,7 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: java.util.HashMap
   elasticsearch:
-    uris: ${SPRING_ELASTICSEARCH_URIS:http://elasticsearch:9200}
+    uris: http://localhost:9200
 
 logging:
   level:

@@ -24,11 +24,21 @@ public class DocumentController {
   @PostMapping("/upload")
   public ResponseEntity<ApiResponse<DocumentCreatedResponse>> upload(
       @RequestParam MultipartFile file,
-      @RequestParam String user) throws Exception {
+      @RequestParam String user,
+      @RequestParam(required = false) String parentId,
+      @RequestParam(required = false) String expedienteId,
+      @RequestParam(required = false) String tipoDocumental,
+      @RequestParam(defaultValue = "ACTIVO") String estado,
+      @RequestParam(defaultValue = "1") Integer version) throws Exception {
     log.info("Uploading document '{}' for user '{}'", file.getOriginalFilename(), user);
     CreateDocumentCommand cmd = CreateDocumentCommand.builder()
         .title(file.getOriginalFilename())
         .owner(user)
+        .parentId(parentId)
+        .expedienteId(expedienteId)
+        .tipoDocumental(tipoDocumental)
+        .estado(estado)
+        .version(version)
         .file(file.getInputStream())
         .build();
 
@@ -38,7 +48,11 @@ public class DocumentController {
         document.getTitle(),
         document.getFileUrl(),
         document.getOwner(),
-        document.getParentId());
+        document.getParentId(),
+        document.getExpedienteId(),
+        document.getTipoDocumental(),
+        document.getEstado(),
+        document.getVersion());
 
     return ResponseEntity.ok(ApiResponse.success(response, "Document uploaded", MDC.get("traceId")));
   }

@@ -29,4 +29,17 @@ public class SearchController {
                         "Search completed",
                         traceId));
     }
+
+    @GetMapping("/owner/{owner}")
+    public Mono<ApiResponse<SearchResponse>> searchByOwner(
+            @PathVariable String owner,
+            @RequestHeader(value = "X-Trace-Id", required = false) String traceId) {
+        log.info("Received owner search request for '{}'", owner);
+        return useCase.searchByOwner(owner, traceId)
+                .collectList()
+                .map(results -> ApiResponse.success(
+                        new SearchResponse(owner, results),
+                        "Owner search completed",
+                        traceId));
+    }
 }

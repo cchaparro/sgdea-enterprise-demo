@@ -1,6 +1,7 @@
 
 package com.template.application.usecase;
 
+import com.template.domain.model.DocumentSearchView;
 import com.template.domain.ports.in.SearchUseCase;
 import com.template.domain.ports.out.SearchRepositoryPort;
 import com.template.domain.ports.out.KafkaPort;
@@ -17,7 +18,7 @@ public class SearchUseCaseImpl implements SearchUseCase {
     private final KafkaPort kafka;
 
     @Override
-    public Flux<String> search(String query, String traceId) {
+    public Flux<DocumentSearchView> search(String query, String traceId) {
         String effectiveTraceId = traceId == null || traceId.isBlank() ? "N/A" : traceId;
         log.info("Executing search for query '{}'", query);
         kafka.send("audit-events", Map.of(
@@ -25,5 +26,16 @@ public class SearchUseCaseImpl implements SearchUseCase {
                 "query", query,
                 "traceId", effectiveTraceId));
         return repository.search(query);
+    }
+
+    @Override
+    public Flux<DocumentSearchView> searchByOwner(String owner, String traceId) {
+        String effectiveTraceId = traceId == null || traceId.isBlank() ? "N/A" : traceId;
+        log.info("Executing owner search for '{}'", owner);
+        kafka.send("audit-events", Map.of(
+                "eventType", "search.by-owner.executed",
+                "owner", owner,
+                "traceId", effectiveTraceId));
+        return repository.searchByOwner(owner);
     }
 }

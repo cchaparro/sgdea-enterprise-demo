@@ -38,6 +38,10 @@ public class CreateDocumentUseCaseImpl implements CreateDocumentUseCase {
                     .fileUrl(fileUrl)
                     .owner(cmd.getOwner())
                     .parentId(cmd.getParentId())
+                    .expedienteId(cmd.getExpedienteId())
+                    .tipoDocumental(cmd.getTipoDocumental())
+                    .estado(cmd.getEstado())
+                    .version(cmd.getVersion())
                     .timestamp(Instant.now().toString())
                     .traceId(MDC.get("traceId"))
                     .build();
@@ -51,6 +55,10 @@ public class CreateDocumentUseCaseImpl implements CreateDocumentUseCase {
                     .fileUrl(fileUrl)
                     .owner(cmd.getOwner())
                     .parentId(cmd.getParentId())
+                    .expedienteId(cmd.getExpedienteId())
+                    .tipoDocumental(cmd.getTipoDocumental())
+                    .estado(cmd.getEstado())
+                    .version(cmd.getVersion())
                     .build();
 
         } catch (Exception e) {

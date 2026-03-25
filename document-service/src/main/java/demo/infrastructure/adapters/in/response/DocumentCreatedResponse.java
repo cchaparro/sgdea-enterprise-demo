@@ -5,5 +5,9 @@ public record DocumentCreatedResponse(
         String title,
         String fileUrl,
         String owner,
-        String parentId) {
+        String parentId,
+        String expedienteId,
+        String tipoDocumental,
+        String estado,
+        Integer version) {
 }

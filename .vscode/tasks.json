@@ -1,0 +1,202 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Infra: Docker Compose Up",
+      "type": "shell",
+      "command": "docker compose up -d postgres zookeeper kafka minio elasticsearch kibana jaeger otel-collector kafka-ui",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Infra: Docker Compose Down",
+      "type": "shell",
+      "command": "docker compose down",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Infra: Reset Docker Compose",
+      "type": "shell",
+      "command": "docker compose down -v --remove-orphans",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Identity Service",
+      "type": "process",
+      "command": "mvn",
+      "args": [
+        "spring-boot:run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/identity-service",
+        "env": {
+          "SPRING_PROFILES_ACTIVE": "local"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Document Service",
+      "type": "process",
+      "command": "mvn",
+      "args": [
+        "spring-boot:run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/document-service",
+        "env": {
+          "SPRING_PROFILES_ACTIVE": "local"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Metadata Service",
+      "type": "process",
+      "command": "mvn",
+      "args": [
+        "spring-boot:run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/metadata-service",
+        "env": {
+          "SPRING_PROFILES_ACTIVE": "local"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Audit Service",
+      "type": "process",
+      "command": "mvn",
+      "args": [
+        "spring-boot:run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/audit-service",
+        "env": {
+          "SPRING_PROFILES_ACTIVE": "local"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Search Service",
+      "type": "process",
+      "command": "mvn",
+      "args": [
+        "spring-boot:run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/search-service",
+        "env": {
+          "SPRING_PROFILES_ACTIVE": "local"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Gateway",
+      "type": "process",
+      "command": "mvn",
+      "args": [
+        "spring-boot:run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/gateway",
+        "env": {
+          "SPRING_PROFILES_ACTIVE": "local"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Core Local Stack",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Run Metadata Service",
+        "Run Search Service",
+        "Run Document Service"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Document + Metadata Local",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Run Metadata Service",
+        "Run Document Service"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Audit + Metadata + Search Local",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Run Audit Service",
+        "Run Metadata Service",
+        "Run Search Service"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Full Local Stack",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Run Identity Service",
+        "Run Metadata Service",
+        "Run Audit Service",
+        "Run Search Service",
+        "Run Document Service",
+        "Run Gateway"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Infra + Core Local Stack",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Infra: Docker Compose Up",
+        "Run Core Local Stack"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Infra + Full Local Stack",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Infra: Docker Compose Up",
+        "Run Full Local Stack"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Reset Infra + Audit Metadata Search",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Infra: Reset Docker Compose",
+        "Infra: Docker Compose Up",
+        "Run Audit + Metadata + Search Local"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Reset Infra + Document Metadata Local",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Infra: Reset Docker Compose",
+        "Infra: Docker Compose Up",
+        "Run Document + Metadata Local"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

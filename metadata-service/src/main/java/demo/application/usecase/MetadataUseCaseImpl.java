@@ -4,6 +4,7 @@ import demo.domain.exception.MetadataNotFoundException;
 import demo.domain.model.Metadata;
 import demo.domain.ports.in.MetadataUseCase;
 import demo.domain.ports.out.MetadataRepositoryPort;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,10 @@ public class MetadataUseCaseImpl implements MetadataUseCase {
         Metadata metadata = new Metadata();
         metadata.setDocumentId(documentId);
         metadata.setOwner(owner);
+        metadata.setEstado("ACTIVO");
+        metadata.setVersion(1);
+        metadata.setCreatedAt(Instant.now());
+        metadata.setUpdatedAt(Instant.now());
         return metadataRepositoryPort.save(metadata);
     }
 
@@ -38,6 +43,7 @@ public class MetadataUseCaseImpl implements MetadataUseCase {
         if (!metadata.getAllowedUsers().contains(user)) {
             metadata.getAllowedUsers().add(user);
         }
+        metadata.setUpdatedAt(Instant.now());
         return metadataRepositoryPort.save(metadata);
     }
 

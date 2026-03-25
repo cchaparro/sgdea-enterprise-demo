@@ -27,6 +27,14 @@ public class MetadataEvent {
 
     private String parentId;
 
+    private String expedienteId;
+
+    private String tipoDocumental;
+
+    private String estado;
+
+    private Integer version;
+
     private String owner;
 
     private String traceId;
@@ -85,6 +93,38 @@ public class MetadataEvent {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getExpedienteId() {
+        return expedienteId;
+    }
+
+    public void setExpedienteId(String expedienteId) {
+        this.expedienteId = expedienteId;
+    }
+
+    public String getTipoDocumental() {
+        return tipoDocumental;
+    }
+
+    public void setTipoDocumental(String tipoDocumental) {
+        this.tipoDocumental = tipoDocumental;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public String getTraceId() {
