@@ -1,0 +1,58 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+*.iml
+*.ipr
+*.iws
+
+# Java / Maven
+target/
+out/
+build/
+.classpath
+.project
+.settings/
+.mvn/timing.properties
+
+# Maven local cache created in workspace
+.m2/
+
+# Logs
+*.log
+logs/
+
+# Spring Boot / temp
+*.pid
+*.pid.lock
+*.seed
+*.tmp
+*.temp
+
+# Coverage / reports
+coverage/
+site/
+
+# Node leftovers if any tooling gets added later
+node_modules/
+
+# Environment / local overrides
+.env
+.env.*
+
+# Generated archives
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.gz
+
+# Local runtime data
+minio/
+data/
