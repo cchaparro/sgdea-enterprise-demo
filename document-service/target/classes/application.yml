@@ -1,0 +1,40 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/sgdea}
+    username: ${SPRING_DATASOURCE_USERNAME:sgdea}
+    password: ${SPRING_DATASOURCE_PASSWORD:sgdea}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+minio:
+  url: ${MINIO_URL:http://minio:9000}
+  access-key: minio
+  secret-key: miniopassword
+  bucket-name: documents
+
+services:
+  metadata:
+    base-url: ${METADATA_SERVICE_URL:http://metadata-service:8083}
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    level: "%5p [traceId:%X{traceId:-N/A}] [otelTrace:%X{trace_id:-N/A}] [span:%X{span_id:-N/A}]"

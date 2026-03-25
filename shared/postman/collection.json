@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "SGDEA Enterprise Demo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "docId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"username\":\"admin\",\n\"password\":\"admin\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/auth/login"
+        }
+      }
+    },
+    {
+      "name": "Upload Document",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8082/documents/upload?user=admin"
+        }
+      }
+    },
+    {
+      "name": "Add ACL",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"user\":\"user1\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8083/metadata/{{docId}}/acl"
+        }
+      }
+    },
+    {
+      "name": "Download Document",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8082/documents/{{docId}}?user=user1"
+        }
+      }
+    }
+  ]
+}

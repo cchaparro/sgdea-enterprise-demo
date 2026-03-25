@@ -1,0 +1,9 @@
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/domain/ports/in/ConsumeAuditEventUseCase.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/infrastructure/adapters/out/persistence/AuditEventRepositoryAdapter.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/App.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/infrastructure/adapters/out/persistence/SpringDataAuditEventRepository.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/domain/ports/out/AuditEventRepositoryPort.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/infrastructure/adapters/in/kafka/AuditConsumer.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/domain/model/AuditEvent.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/config/OpenApiConfig.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/audit-service/src/main/java/demo/application/usecase/ConsumeAuditEventUseCaseImpl.java

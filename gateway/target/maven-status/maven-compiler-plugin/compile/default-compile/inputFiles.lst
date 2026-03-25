@@ -1,0 +1,6 @@
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/gateway/src/main/java/demo/App.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/gateway/src/main/java/demo/infrastructure/config/TraceIdFilter.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/gateway/src/main/java/demo/infrastructure/api/HealthResponse.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/gateway/src/main/java/demo/config/OpenApiConfig.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/gateway/src/main/java/demo/infrastructure/adapters/in/rest/HealthController.java
+/Users/chapita/Documents/GTC/repos/sgdea-enterprise-demo/gateway/src/main/java/demo/infrastructure/api/ApiResponse.java

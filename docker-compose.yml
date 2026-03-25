@@ -1,0 +1,243 @@
+name: sgdea-enterprise-demo
+
+x-otel-env: &otel-env
+  JAVA_TOOL_OPTIONS: "-javaagent:/otel/opentelemetry-javaagent.jar"
+  OTEL_TRACES_EXPORTER: otlp
+  OTEL_METRICS_EXPORTER: none
+  OTEL_LOGS_EXPORTER: none
+  OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+  OTEL_PROPAGATORS: tracecontext,baggage,b3
+  OTEL_INSTRUMENTATION_LOGBACK_APPENDER_ENABLED: "true"
+  OTEL_INSTRUMENTATION_LOGBACK_MDC_ENABLED: "true"
+  OTEL_RESOURCE_ATTRIBUTES: deployment.environment=docker-compose
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: sgdea
+      POSTGRES_USER: sgdea
+      POSTGRES_PASSWORD: sgdea
+    ports:
+      - "5432:5432"
+    networks:
+      - sgdea-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgdea -d sgdea"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniopassword
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - sgdea-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - sgdea-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    networks:
+      - sgdea-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    ports:
+      - "8085:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    networks:
+      - sgdea-net
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.57
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    networks:
+      - sgdea-net
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.102.1
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./observability/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml:ro
+    depends_on:
+      jaeger:
+        condition: service_started
+    ports:
+      - "4318:4318"
+    networks:
+      - sgdea-net
+
+  identity-service:
+    build: ./identity-service
+    ports:
+      - "8081:8081"
+    environment:
+      <<: *otel-env
+      OTEL_SERVICE_NAME: identity-service
+    networks:
+      - sgdea-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  metadata-service:
+    build: ./metadata-service
+    ports:
+      - "8083:8083"
+    environment:
+      <<: *otel-env
+      OTEL_SERVICE_NAME: metadata-service
+    networks:
+      - sgdea-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  document-service:
+    build: ./document-service
+    ports:
+      - "8082:8082"
+    environment:
+      <<: *otel-env
+      OTEL_SERVICE_NAME: document-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sgdea
+      SPRING_DATASOURCE_USERNAME: sgdea
+      SPRING_DATASOURCE_PASSWORD: sgdea
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MINIO_URL: http://minio:9000
+      METADATA_SERVICE_URL: http://metadata-service:8083
+    networks:
+      - sgdea-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      kafka:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+
+  audit-service:
+    build: ./audit-service
+    ports:
+      - "8084:8084"
+    environment:
+      <<: *otel-env
+      OTEL_SERVICE_NAME: audit-service
+    networks:
+      - sgdea-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *otel-env
+      OTEL_SERVICE_NAME: gateway
+    networks:
+      - sgdea-net
+    depends_on:
+      identity-service:
+        condition: service_started
+      document-service:
+        condition: service_started
+      metadata-service:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+
+  search-service:
+    build: ./search-service
+    ports:
+      - "8086:8086"
+    environment:
+      <<: *otel-env
+      OTEL_SERVICE_NAME: search-service
+      SERVER_PORT: 8086
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+    networks:
+      - sgdea-net
+    depends_on:
+      kafka:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+
+  redocly:
+    image: nginx:1.27-alpine
+    ports:
+      - "8090:80"
+    volumes:
+      - ./redoc/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./redoc/index.html:/usr/share/nginx/html/index.html:ro
+    networks:
+      - sgdea-net
+    depends_on:
+      gateway:
+        condition: service_started
+      identity-service:
+        condition: service_started
+      document-service:
+        condition: service_started
+      metadata-service:
+        condition: service_started
+      audit-service:
+        condition: service_started
+      search-service:
+        condition: service_started
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    networks:
+      - sgdea-net
+networks:
+  sgdea-net:
